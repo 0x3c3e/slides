@@ -1,59 +1,14 @@
----
-marp: true
-theme: base
-paginate: true
----
-
-<!--
-_paginate: false
--->
-
-<!-- Global style -->
-<style>
-.highlighted-line {
-  background-color: #FFFF00;
-  display: block;
-  margin: 0 -16px;
-  padding: 0 16px;
-}
-h1 {
-  color: black;
-}
-footer {
-  font-size: 22px;
-}
-</style>
-
 # `CodeQL + DTrace = 💧🐞 in XNU`
 ### How to find multiple memory disclosures in XNU using CodeQL
 
-</br>
-</br>
-</br>
-</br>
-</br>
-</br>
-
-![width:200px](images/logos/zerocon.png)
-
 ---
-<!--
-_paginate: false
--->
-
 # whoami
 ## Arsenii Kostromin 
 * Security researcher
   * Focus on macOS security: userland and kernel
 * Twitter [@0x3C3E](https://twitter.com/0x3C3E)
 
-![bg right:33%](images/logos/0x3c3e.png)
-
 ---
-<!--
-_paginate: false
--->
-
 # Agenda
 Kernel Memory Disclosure, my 🥇 and 🥈 bugs in XNU
 
@@ -64,16 +19,10 @@ Apple interviewer asked me several times why I don't look for bugs in the kernel
 * Before `December 2022`, I haven't looked into the `XNU` source code
 
 ---
-<!--
-_paginate: false
--->
 ![bg](images/memes/bloodborne.jpg)
 
 ---
 # Kernel Memory Disclosure 🥇
-<!--
-_paginate: false
--->
 
 ---
 # My approach
@@ -94,11 +43,6 @@ _paginate: false
 
 ---
 # DTrace
-<style scoped>
-pre {
-   font-size: 2rem;
-}
-</style>
 * Released in `2005` by Oracle
 * Apple merged it into XNU in `2007`
   * Was it thoroughly audited?
@@ -135,11 +79,6 @@ I decided to look for OOB issues. For that, I wrote a query to find such code, w
 
 ---
 # `a >= b`, where `a` is signed, and `b` is not
-<style scoped>
-pre {
-   font-size: 2rem;
-}
-</style>
 ```sql
 from Variable arg
 where exists(
@@ -156,11 +95,6 @@ select arg
 
 ---
 # No `a < 0` and `a <= 0` checks
-<style scoped>
-pre {
-   font-size: 2rem;
-}
-</style>
 ```sql
 from Variable arg
 where not exists(
@@ -175,11 +109,6 @@ select arg
 ```
 ---
 ## `a` is an array index
-<style scoped>
-pre {
-   font-size: 2rem;
-}
-</style>
 ```sql
 from Variable arg, ArrayExpr ae
 where ae.getArrayOffset() = arg.getAnAccess()
@@ -413,9 +342,6 @@ if (probe->ftp_prov->ftp_retired != 0 ||
 * Apple hasn't released the new `XNU` source code
 
 ---
-<!--
-_paginate: false
--->
 # Kernel Memory Disclosure 🥈
 
 ---
@@ -427,11 +353,6 @@ _paginate: false
 
 ---
 # `a < b`, where `a` is signed, happens in `IfStmt`
-<style scoped>
-pre {
-   font-size: 2rem;
-}
-</style>
 ```sql
 from Variable arg
 where exists(
@@ -448,11 +369,6 @@ select arg
 
 ---
 # No `a < 0` and `a <= 0` checks
-<style scoped>
-pre {
-   font-size: 2rem;
-}
-</style>
 ```sql
 from Variable arg
 where not exists(
@@ -468,11 +384,6 @@ select arg
 
 ---
 # `a` is an array index
-<style scoped>
-pre {
-   font-size: 2rem;
-}
-</style>
 ```sql
 from Variable arg, ArrayExpr ae
 where ae.getArrayOffset() = arg.getAnAccess()
@@ -482,11 +393,6 @@ select ae.getArrayOffset(),
 
 ---
 # Filter results by a file path
-<style scoped>
-pre {
-   font-size: 2rem;
-}
-</style>
 ```sql
 from ArrayExpr ae
 where ae.getFile().getAbsolutePath().
