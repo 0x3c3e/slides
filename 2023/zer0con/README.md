@@ -340,7 +340,7 @@ if (probe->ftp_prov->ftp_retired != 0 ||
 }
 ```
 * Apple hasn't released the new `XNU` source code
-	* upd: [8792.41.9 and 8796.101.5 diff](https://github.com/apple-oss-distributions/xnu/compare/xnu-8792.81.2...xnu-8796.101.5?diff=unified#diff-60c1704f05c8cd2332cecee78d2f218865cdec7bc930d2401443d0b5a7913e02L1367-L1370)
+	* upd: [xnu-8792.81.2 and 8796.101.5 diff](https://github.com/apple-oss-distributions/xnu/compare/xnu-8792.81.2...xnu-8796.101.5?diff=unified#diff-60c1704f05c8cd2332cecee78d2f218865cdec7bc930d2401443d0b5a7913e02L1367-L1370)
 
 ---
 # Kernel Memory Disclosure 🥈
@@ -587,7 +587,7 @@ if (ndx >= sizeof (mstate->dtms_arg) / sizeof (mstate->dtms_arg[0])) {
 * Additional check added in caller function
 * Callee functions are unfixed for some reason
 * Apple hasn't released the new XNU source code
-	* upd: [8792.41.9 and 8796.101.5 diff](https://github.com/apple-oss-distributions/xnu/compare/xnu-8792.81.2...xnu-8796.101.5?diff=unified#diff-8689fbf120ca6acdbe298fa3b4949bd4fee3531e9ba671460d74569b6a9dda21R3307-R3310)
+	* upd: [8792.81.2 and 8796.101.5 diff](https://github.com/apple-oss-distributions/xnu/compare/xnu-8792.81.2...xnu-8796.101.5?diff=unified#diff-8689fbf120ca6acdbe298fa3b4949bd4fee3531e9ba671460d74569b6a9dda21R3307-R3310)
 
 
 ---
