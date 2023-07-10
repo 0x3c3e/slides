@@ -147,8 +147,8 @@ select ae.getArrayOffset(),
 * Only `6` different functions
 
 ---
-# `fasttrap_pid_getargdesc`
-```c {3,9}
+### `fasttrap_pid_getargdesc` [^1]
+```c
 // args: (void *arg, dtrace_id_t id, void *parg, dtrace_argdesc_t *desc)
 if (probe->ftp_prov->ftp_retired != 0 ||
     desc->dtargd_ndx >= probe->ftp_nargs) {
@@ -160,10 +160,11 @@ ndx = (probe->ftp_argmap != NULL) ?
   probe->ftp_argmap[desc->dtargd_ndx] : desc->dtargd_ndx;
 ```
 Docs: get the argument description for args[X]
-<!-- _footer: '[bsd/dev/dtrace/fasttrap.c](https://github.com/apple-oss-distributions/xnu/blob/5c2921b07a2480ab43ec66f5b9e41cb872bc554f/bsd/dev/dtrace/fasttrap.c#L1367-L1374)' -->
+
+[^1]: [bsd/dev/dtrace/fasttrap.c](https://github.com/apple-oss-distributions/xnu/blob/5c2921b07a2480ab43ec66f5b9e41cb872bc554f/bsd/dev/dtrace/fasttrap.c#L1367-L1374)
 ---
 
-### `dtargd_ndx` is `int`
+### `dtargd_ndx` is `int` [^2]
 ```c {3}
 typedef struct dtrace_argdesc {
 ...              
@@ -171,16 +172,18 @@ typedef struct dtrace_argdesc {
 ...
 } dtrace_argdesc_t;
 ```
+[^2]: [bsd/sys/dtrace.h](https://github.com/apple-oss-distributions/xnu/blob/5c2921b07a2480ab43ec66f5b9e41cb872bc554f/bsd/sys/dtrace.h#L1331-L1337)
 
-### `ftp_nargs` is `unsigned char`
-```c {3}
+### `ftp_nargs` is `unsigned char`  [^3]
+```c
 struct fasttrap_probe {
 ...
 	uint8_t ftp_nargs;                /* translated argument count */
 ...
 };
 ```
-<!-- _footer: '[bsd/sys/dtrace.h](https://github.com/apple-oss-distributions/xnu/blob/5c2921b07a2480ab43ec66f5b9e41cb872bc554f/bsd/sys/dtrace.h#L1331-L1337), [bsd/sys/fasttrap_impl.h](https://github.com/apple-oss-distributions/xnu/blob/5c2921b07a2480ab43ec66f5b9e41cb872bc554f/bsd/sys/fasttrap_impl.h#L119-L134)' -->
+
+[^3]: [bsd/sys/fasttrap_impl.h](https://github.com/apple-oss-distributions/xnu/blob/5c2921b07a2480ab43ec66f5b9e41cb872bc554f/bsd/sys/fasttrap_impl.h#L119-L134)
 
 ---
 # Both sides are converted to `int`
@@ -208,7 +211,7 @@ If `probe->ftp_argmap` isn't `null`, it's possible to reach the first expression
 It's called as a C-style `virtual function`
 
 ---
-### `dtrace_pops`
+### `dtrace_pops` [^4]
 ```c {3-4}
 typedef struct dtrace_pops {
 ...
@@ -217,7 +220,9 @@ typedef struct dtrace_pops {
 ...
 } dtrace_pops_t;
 ```
-### `dtrace_pops_t`
+[^4]: [bsd/sys/dtrace.h](https://github.com/apple-oss-distributions/xnu/blob/5c2921b07a2480ab43ec66f5b9e41cb872bc554f/bsd/sys/dtrace.h#L2316-L2317)
+
+### `dtrace_pops_t` [^5]
 ```c {3}
 static dtrace_pops_t pid_pops = {
 ...
@@ -225,11 +230,11 @@ static dtrace_pops_t pid_pops = {
 ...
 };
 ```
-<!-- _footer: '[bsd/sys/dtrace.h](https://github.com/apple-oss-distributions/xnu/blob/5c2921b07a2480ab43ec66f5b9e41cb872bc554f/bsd/sys/dtrace.h#L2316-L2317), [bsd/dev/dtrace/fasttrap.c](https://github.com/apple-oss-distributions/xnu/blob/5c2921b07a2480ab43ec66f5b9e41cb872bc554f/bsd/dev/dtrace/fasttrap.c#L1440)' -->
+[^5]: [bsd/dev/dtrace/fasttrap.c](https://github.com/apple-oss-distributions/xnu/blob/5c2921b07a2480ab43ec66f5b9e41cb872bc554f/bsd/dev/dtrace/fasttrap.c#L1440)
 
 
 ---
-### `dtps_getargdesc` might be a pointer to `fasttrap_pid_getargdesc`
+### `dtps_getargdesc` might be a pointer to `fasttrap_pid_getargdesc` [^6]
 ```c {1,6}
 prov->dtpv_pops.dtps_getargdesc(
     prov->dtpv_arg,
@@ -238,11 +243,10 @@ prov->dtpv_pops.dtps_getargdesc(
     &desc
 );
 ```
-<!-- _footer: '[bsd/dev/dtrace/dtrace.c](https://github.com/apple-oss-distributions/xnu/blob/5c2921b07a2480ab43ec66f5b9e41cb872bc554f/bsd/dev/dtrace/dtrace.c#L18251-L18252)' -->
-
+[^6]: [bsd/dev/dtrace/dtrace.c](https://github.com/apple-oss-distributions/xnu/blob/5c2921b07a2480ab43ec66f5b9e41cb872bc554f/bsd/dev/dtrace/dtrace.c#L18251-L18252)
 
 ---
-## Upper bound check in `fasttrap_pid_getargdesc`
+### Upper bound check in `fasttrap_pid_getargdesc` [^7]
 ```c {2}
 if (probe->ftp_prov->ftp_retired != 0 ||
     desc->dtargd_ndx >= probe->ftp_nargs) {
@@ -251,12 +255,13 @@ if (probe->ftp_prov->ftp_retired != 0 ||
 }
 ```
 
-## Comparing to `-1` in `dtrace_ioctl`
+### Comparing to `-1` in `dtrace_ioctl` [^8]
 ```c {1}
 if (desc.dtargd_ndx == DTRACE_ARGNONE)
   return (EINVAL);
 ```
-<!-- _footer: '[bsd/dev/dtrace/fasttrap.c](https://github.com/apple-oss-distributions/xnu/blob/5c2921b07a2480ab43ec66f5b9e41cb872bc554f/bsd/dev/dtrace/fasttrap.c#L1367-L1371), [bsd/dev/dtrace/dtrace.c](https://github.com/apple-oss-distributions/xnu/blob/5c2921b07a2480ab43ec66f5b9e41cb872bc554f/bsd/dev/dtrace/dtrace.c#L18214-L18215)' -->
+[^7]: [bsd/dev/dtrace/fasttrap.c](https://github.com/apple-oss-distributions/xnu/blob/5c2921b07a2480ab43ec66f5b9e41cb872bc554f/bsd/dev/dtrace/fasttrap.c#L1367-L1371)
+[^8]: [bsd/dev/dtrace/dtrace.c](https://github.com/apple-oss-distributions/xnu/blob/5c2921b07a2480ab43ec66f5b9e41cb872bc554f/bsd/dev/dtrace/dtrace.c#L18214-L18215)
 
 ---
 # How to leak out-of-bounds values?
@@ -436,8 +441,8 @@ select ae.getArrayOffset(),
 * Only `45` different functions
 
 ---
-### ⚔️ OOB Read, `argno` is an index on `arm64`
-```c {9}
+### ⚔️ OOB Read, `argno` is an index on `arm64` [^9]
+```c 
 uint64_t
 fasttrap_pid_getarg(void *arg, dtrace_id_t id, void *parg, int argno,
     int aframes)
@@ -450,11 +455,11 @@ fasttrap_pid_getarg(void *arg, dtrace_id_t id, void *parg, int argno,
 	}
 ```
 Docs: get the value for an argX or args[X] variable
-<!-- _footer: '[bsd/dev/arm64/fasttrap_isa.c](https://github.com/apple-oss-distributions/xnu/blob/5c2921b07a2480ab43ec66f5b9e41cb872bc554f/bsd/dev/arm64/fasttrap_isa.c#L1156-L1176)' -->
+[^9]: [bsd/dev/arm64/fasttrap_isa.c](https://github.com/apple-oss-distributions/xnu/blob/5c2921b07a2480ab43ec66f5b9e41cb872bc554f/bsd/dev/arm64/fasttrap_isa.c#L1156-L1176)
 
 ---
-### ⚔️ OOB Read, `argno` is an index on `x86_64`
-```c {9}
+### ⚔️ OOB Read, `argno` is an index on `x86_64` [^10]
+```c
 uint64_t
 fasttrap_pid_getarg(void* arg, dtrace_id_t id, void* parg, int argno,
     int aframes)
@@ -466,18 +471,19 @@ fasttrap_pid_getarg(void* arg, dtrace_id_t id, void* parg, int argno,
         argno));
 }
 ```
-### `fasttrap_anarg`
-```c {3}
+### `fasttrap_anarg` [^11]
+```c 
 // args: (x86_saved_state_t *regs, int function_entry, int argno)
 if (argno < 6)
   return ((&regs64->rdi)[argno]);
 ```
 
-<!-- _footer: '[bsd/dev/i386/fasttrap_isa.c](https://github.com/apple-oss-distributions/xnu/blob/5c2921b07a2480ab43ec66f5b9e41cb872bc554f/bsd/dev/i386/fasttrap_isa.c#L2207-L2214), [bsd/dev/i386/fasttrap_isa.c](https://github.com/apple-oss-distributions/xnu/blob/5c2921b07a2480ab43ec66f5b9e41cb872bc554f/bsd/dev/i386/fasttrap_isa.c#L206-L248)' -->
+[^10]: [bsd/dev/i386/fasttrap_isa.c](https://github.com/apple-oss-distributions/xnu/blob/5c2921b07a2480ab43ec66f5b9e41cb872bc554f/bsd/dev/i386/fasttrap_isa.c#L2207-L2214)
+[^11]: [bsd/dev/i386/fasttrap_isa.c](https://github.com/apple-oss-distributions/xnu/blob/5c2921b07a2480ab43ec66f5b9e41cb872bc554f/bsd/dev/i386/fasttrap_isa.c#L206-L248)
 
 ---
-### `dtrace_pops`
-```c {3-4}
+### `dtrace_pops` [^12]
+```c
 typedef struct dtrace_pops {
 ...
         uint64_t (*dtps_getargval)(void *arg, dtrace_id_t id, void *parg,
@@ -485,22 +491,22 @@ typedef struct dtrace_pops {
 ...
 } dtrace_pops_t;
 ```
-<!-- _footer: '[bsd/sys/dtrace.h](https://github.com/apple-oss-distributions/xnu/blob/5c2921b07a2480ab43ec66f5b9e41cb872bc554f/bsd/sys/dtrace.h#L2316-L2317)' -->
+[^12]: [bsd/sys/dtrace.h](https://github.com/apple-oss-distributions/xnu/blob/5c2921b07a2480ab43ec66f5b9e41cb872bc554f/bsd/sys/dtrace.h#L2316-L2317)
 
 <!-- --- -->
-### `dtrace_pops_t`
-```c {3}
+### `dtrace_pops_t` [^13]
+```c
 static dtrace_pops_t pid_pops = {
 ...
 	.dtps_getargval =	fasttrap_pid_getarg,
 ...
 };
 ```
-<!-- _footer: '[bsd/dev/dtrace/fasttrap.c](https://github.com/apple-oss-distributions/xnu/blob/5c2921b07a2480ab43ec66f5b9e41cb872bc554f/bsd/dev/dtrace/fasttrap.c#L1433-L1457)' -->
+[^13]: [bsd/dev/dtrace/fasttrap.c](https://github.com/apple-oss-distributions/xnu/blob/5c2921b07a2480ab43ec66f5b9e41cb872bc554f/bsd/dev/dtrace/fasttrap.c#L1433-L1457)
 
 ---
-### `dtps_getargval` might be a pointer to `fasttrap_pid_getarg`
-```c {12-15}
+### `dtps_getargval` might be a pointer to `fasttrap_pid_getarg` [^14]
+```c
 // func: dtrace_dif_variable
 // args: (dtrace_mstate_t *mstate, dtrace_state_t *state, uint64_t v, 
 // uint64_t ndx)
@@ -508,7 +514,7 @@ val = pv->dtpv_pops.dtps_getargval(pv->dtpv_arg,
     mstate->dtms_probe->dtpr_id,
     mstate->dtms_probe->dtpr_arg, ndx, aframes);
 ```
-<!-- _footer: '[bsd/dev/dtrace/dtrace.c](https://github.com/apple-oss-distributions/xnu/blob/5c2921b07a2480ab43ec66f5b9e41cb872bc554f/bsd/dev/dtrace/dtrace.c#L3308-L3310)' -->
+[^14]: [bsd/dev/dtrace/dtrace.c](https://github.com/apple-oss-distributions/xnu/blob/5c2921b07a2480ab43ec66f5b9e41cb872bc554f/bsd/dev/dtrace/dtrace.c#L3308-L3310)
 
 ---
 # Bounds check?
@@ -541,7 +547,7 @@ Almost the same code flow as in [CVE-2017-13782](https://securitylab.github.com/
   * Trace it using DTrace: `pid$target::foo:entry { ... }`
 
 ---
-# Code flow difference
+# Code flow difference [^15]
 ```c {3-5,8}
 pv = mstate->dtms_probe->dtpr_provider;
 if (pv->dtpv_pops.dtps_getargval != NULL)
@@ -553,7 +559,7 @@ else
     val = dtrace_getarg(ndx, aframes, mstate, vstate); // CVE-2017-13782
 ```
 * `9` lines difference
-<!-- _footer: '[bsd/dev/dtrace/dtrace.c](https://github.com/apple-oss-distributions/xnu/blob/5c2921b07a2480ab43ec66f5b9e41cb872bc554f/bsd/dev/dtrace/dtrace.c#L3306-L3317)' -->
+[^15]: [bsd/dev/dtrace/dtrace.c](https://github.com/apple-oss-distributions/xnu/blob/5c2921b07a2480ab43ec66f5b9e41cb872bc554f/bsd/dev/dtrace/dtrace.c#L3306-L3317)
 
 ---
 # [CVE-2023-28200](https://support.apple.com/en-us/HT213670)
@@ -592,8 +598,8 @@ if (ndx >= sizeof (mstate->dtms_arg) / sizeof (mstate->dtms_arg[0])) {
 
 ---
 # 😿😿😿
-![bg fit](images/messages/twitter.png)
-<!-- _footer: '[@jaakerblom](https://twitter.com/jaakerblom/status/1565049707759828992)' -->
+![bg fit](images/messages/twitter.png) [^16]
+[^16]: [@jaakerblom](https://twitter.com/jaakerblom/status/1565049707759828992)
 
 ---
 # Why?
@@ -619,7 +625,4 @@ if (ndx >= sizeof (mstate->dtms_arg) / sizeof (mstate->dtms_arg[0])) {
 * [There is no S in macOS SIP](https://s.itho.me/ccms_slides/2022/9/29/367d1246-198f-40c5-95bf-2916bcb33f14.pdf)
 
 ---
-<!--
-_paginate: false
--->
 # Thank you
